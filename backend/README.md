@@ -6,3 +6,7 @@
 `docker run --rm -v ${PWD}:/usr/app -w /usr/app node:12.18.0-slim npm install typescript -D`
 `docker run --rm -v ${PWD}:/usr/app -w /usr/app node:12.18.0-slim npx tsc --init`
 `docker run --rm -v ${PWD}:/usr/app -w /usr/app node:12.18.0-slim npm install ts-node-dev -D`
+
+
+- Criando o frontend:
+`docker run --rm -v ${PWD}:/usr/app -w /usr/app node:12.18.0-slim npx create-react-app frontend --template=typescript`
