@@ -15,3 +15,17 @@ services:
             - ./backend:/usr/app
             - /usr/app/node_modules
         command: npm run dev
+    
+    frontend:
+        build: 
+            context: frontend/.
+            args: 
+                - NODE_ENV=development
+        image: frontend_nlw
+        container_name: frontend_nlw
+        ports:
+            - 3006:3000
+        volumes: 
+            - ./frontend:/usr/app
+        command: npm run start
+        stdin_open: true
