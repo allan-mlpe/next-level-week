@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 import { Map, TileLayer, Marker } from 'react-leaflet';
@@ -7,15 +7,31 @@ import './styles.css';
 import logo from '../../assets/logo.svg';
 
 import api from '../../services/api';
+import { getUFs, getCities } from '../../services/ibgeService';
 
 interface Item {
-    id: number,
-    title: string,
-    image: string
+    id: number;
+    title: string;
+    image: string;
+}
+
+interface UF {
+    id: number;
+    name: string;
+    initials: string;
+}
+
+interface City {
+    id: number;
+    name: string;
 }
 
 const CreatePoint = () => {
     const [items, setItems] = useState<Item[]>([]);
+    const [ufs, setUfs] = useState<UF[]>([]);
+    const [selectedUf, setSelectedUf] = useState<string>('0');
+    const [cities, setCities] = useState<City[]>([]);
+    const [selectedCity, setSelectedCity] = useState<string>();
 
     const loadItems = async () => {
         const itemsResponse = await api.get('/items');
@@ -23,10 +39,59 @@ const CreatePoint = () => {
         setItems(itemsResponse.data);
     }
 
+    const loadUFs = async () => {
+        const ufs = await getUFs();
+
+        const mappedUfs = ufs.data.map((uf:any) => {
+            return {
+                id: uf.id,
+                name: uf.nome,
+                initials: uf.sigla
+            }
+        });
+
+        setUfs(mappedUfs);
+    }
+
+    const loadCities = async () => {
+        const cities = await getCities(selectedUf);
+
+        const mappedCities = cities.data.map((city: any) => {
+            return {
+                id: city.id,
+                name: city.nome
+            }
+        });
+
+        setCities(mappedCities);
+    }
+
     // carrega os itens ao montar o componente
     useEffect(() => {
         loadItems()
     }, []);
+
+    // carrega os itens de UF
+    useEffect(() => {
+        loadUFs()
+    }, []);
+
+    // carrega os munincípios sempre que `selectedUf` mudar 
+    useEffect(() => {
+        if (selectedUf !== '0') {
+            loadCities();
+        } else {
+            setCities([]);
+        }
+    }, [selectedUf]);
+
+    const handleSelectUf = (event: ChangeEvent<HTMLSelectElement>) => {
+        setSelectedUf(event.target.value);
+    }
+
+    const handleSelectCity = (event: ChangeEvent<HTMLSelectElement>) => {
+        setSelectedCity(event.target.value);
+    }
 
     return (
         <div id="page-create-point">
@@ -98,15 +163,44 @@ const CreatePoint = () => {
                         <div className="field-group">
                             <div className="field">
                                 <label htmlFor="uf">Estado (UF)</label>
-                                <select name="uf" id="uf">
-                                   <option value="0">Selecione o estado</option> 
+                                <select 
+                                    name="uf" 
+                                    id="uf"
+                                    onChange={handleSelectUf}
+                                    value={selectedUf}
+                                >
+                                    <option value="0">Selecione uma UF</option>
+                                    {
+                                        ufs.map((uf) => (
+                                            <option 
+                                                key={uf.id}
+                                                value={uf.initials}
+                                            >
+                                                    {uf.initials} - {uf.name}
+                                            </option>
+                                        ))
+                                    }
                                 </select>
                             </div>
 
                             <div className="field">
                                 <label htmlFor="city">Cidade</label>
-                                <select name="city" id="city">
-                                   <option value="0">Selecione a cidade</option> 
+                                <select 
+                                    name="uf" 
+                                    id="uf"
+                                    onChange={handleSelectCity}
+                                    value={selectedCity}
+                                >
+                                    <option value="0">Selecione a cidade</option>
+                                    {
+                                        cities.map((city) => (
+                                            <option 
+                                                key={city.id}
+                                                value={city.name}>
+                                                    {city.name}
+                                            </option>
+                                        ))
+                                    }
                                 </select>
                             </div>
                         </div>
@@ -123,7 +217,7 @@ const CreatePoint = () => {
                         {(
                             items.map((item, index) => (
                                 <li 
-                                    key="index"
+                                    key={item.id}
                                     className={index === 2 ? 'selected' : ''}>
                                         <img src={item.image} alt={item.title}/>
                                         <span>{item.title}</span>
