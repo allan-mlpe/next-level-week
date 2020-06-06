@@ -1,10 +1,18 @@
 import express from 'express';
 import path from 'path';
 import routes from './routes';
+import cors from 'cors';
 
 const app = express();
-app.use(express.json());
 
+app.use(cors(
+    /* filtra os domínios que terão acesso ao server
+    {
+        origin: 'www.meuapp.com.br'
+    }
+    */
+));
+app.use(express.json());
 app.use(routes);
 
 /* 
