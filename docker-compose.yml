@@ -13,7 +13,6 @@ services:
             - 9922:9229
         volumes: 
             - ./backend:/usr/app
-            - /usr/app/node_modules
         command: npm run dev
     
     frontend:
