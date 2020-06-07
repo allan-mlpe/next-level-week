@@ -5,8 +5,11 @@ import { Feather as Icon } from '@expo/vector-icons';
 import { View, Image, StyleSheet, Text, ImageBackground } from 'react-native'; 
 import { Roboto_400Regular, Roboto_500Medium } from '@expo-google-fonts/roboto';
 import { Ubuntu_700Bold, useFonts } from '@expo-google-fonts/ubuntu'
+import { useNavigation } from '@react-navigation/native';
 
 const Home = () => {
+    const navigation = useNavigation();
+
     const [fontsLoaded] = useFonts({
         Roboto_400Regular,
         Roboto_500Medium,
@@ -15,6 +18,10 @@ const Home = () => {
 
     if (!fontsLoaded) {
         return <AppLoading />
+    }
+
+    const handleNavigationToPoints = () => {
+      navigation.navigate('Points');
     }
 
     return (
@@ -30,7 +37,7 @@ const Home = () => {
             </View>
 
             <View style={styles.footer}>
-                <RectButton style={styles.button} onPress={() => {}}>
+                <RectButton style={styles.button} onPress={handleNavigationToPoints}>
                     <View style={styles.buttonIcon}>
                         <Text>
                             <Icon name="arrow-right" color="#FFF" size={24}/>
