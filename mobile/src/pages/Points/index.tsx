@@ -1,7 +1,7 @@
 import React from 'react';
 import Constants from 'expo-constants';
 import { Feather as Icon } from '@expo/vector-icons';
-import { View, StyleSheet, TouchableOpacity, Text, ScrollView } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import MapView, { Marker } from 'react-native-maps';
 import { SvgUri } from 'react-native-svg'
@@ -11,14 +11,18 @@ const Points = () => {
 
     const items = [1,2,3,4,5,6];
 
-    const handleBackNavigation = () => {
+    const handleNavigateBack = () => {
         navigation.goBack();
+    }
+
+    const handleNavigateToDetail = () => {
+        navigation.navigate('Detail');
     }
 
     return (
         <>
         <View style={styles.container}>
-            <TouchableOpacity onPress={handleBackNavigation}>
+            <TouchableOpacity onPress={handleNavigateBack}>
                 <Icon name="arrow-left" color="#34cb79" size={20} />
             </TouchableOpacity>
 
@@ -35,12 +39,22 @@ const Points = () => {
                         longitudeDelta: 0.014
                     }}
                 >
-                    <Marker 
+                    <Marker
+                        style={styles.mapMarker} 
                         coordinate={{
                             latitude: -8.0549795,
                             longitude: -34.8783129
                         }}
-                    />
+                        onPress={handleNavigateToDetail}
+                    >
+                        <View style={styles.mapMarkerContainer}>
+                            <Image 
+                                style={styles.mapMarkerImage}
+                                source={{ uri: 'https://images.unsplash.com/photo-1560891788-75137d27109c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=250&q=50' }} 
+                            />
+                            <Text style={styles.mapMarkerTitle}>Mercado</Text>
+                        </View>
+                    </Marker>
                 </MapView>
             </View>
 
