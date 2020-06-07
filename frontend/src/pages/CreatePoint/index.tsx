@@ -37,6 +37,7 @@ const CreatePoint = () => {
     const [selectedCity, setSelectedCity] = useState<string>();
     const [initialCoords, setInitialsCoords] = useState<[number, number]>([-8.055283,-34.878128]);
     const [selectedCoords, setSelectedCoords] = useState<[number, number]>([0,0]);
+    const [selectedItems, setSelectedItems] = useState<number[]>([]);
 
 
     const loadItems = async () => {
@@ -114,6 +115,15 @@ const CreatePoint = () => {
         const { lat, lng } = e.latlng;
 
         setSelectedCoords([lat, lng]);
+    }
+
+    const handleSelectedItems = (itemId: number) => {
+        const index = selectedItems.indexOf(itemId);
+
+        const items =  index >= 0 ? selectedItems.filter(i => i !== itemId) 
+            : [...selectedItems, itemId];
+
+        setSelectedItems(items);
     }
 
     return (
@@ -241,7 +251,9 @@ const CreatePoint = () => {
                             items.map((item, index) => (
                                 <li 
                                     key={item.id}
-                                    className={index === 2 ? 'selected' : ''}>
+                                    className={selectedItems.includes(item.id) ? 'selected' : ''}
+                                    onClick={() => handleSelectedItems(item.id)}
+                                >
                                         <img src={item.image} alt={item.title}/>
                                         <span>{item.title}</span>
                                 </li>
