@@ -1,7 +1,6 @@
 import React from 'react';
-import Constants from 'expo-constants';
 import { Feather as Icon } from '@expo/vector-icons';
-import { View, StyleSheet, TouchableOpacity, Text, ScrollView, Image } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, ScrollView, Image, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import MapView, { Marker } from 'react-native-maps';
 import { SvgUri } from 'react-native-svg'
@@ -20,7 +19,7 @@ const Points = () => {
     }
 
     return (
-        <>
+        <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.container}>
             <TouchableOpacity onPress={handleNavigateBack}>
                 <Icon name="arrow-left" color="#34cb79" size={20} />
@@ -86,7 +85,7 @@ const Points = () => {
                 }
             </ScrollView>
         </View>
-        </>
+        </SafeAreaView>
     );
 };
 
@@ -94,7 +93,7 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       paddingHorizontal: 32,
-      paddingTop: 20 + Constants.statusBarHeight,
+      paddingTop: 20,
     },
   
     title: {
