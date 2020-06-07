@@ -31,6 +31,11 @@ const CreatePoint = () => {
     const [items, setItems] = useState<Item[]>([]);
     const [ufs, setUfs] = useState<UF[]>([]);
     const [cities, setCities] = useState<City[]>([]);
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        whatsapp: ''
+    });
 
     // selected values
     const [selectedUf, setSelectedUf] = useState<string>('0');
@@ -126,6 +131,15 @@ const CreatePoint = () => {
         setSelectedItems(items);
     }
 
+    const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target;
+
+        setFormData({
+            ...formData,
+            [name]: value
+        });
+    }
+
     return (
         <div id="page-create-point">
             <header>
@@ -151,6 +165,7 @@ const CreatePoint = () => {
                             type="text"
                             name="name"
                             id="name"
+                            onChange={handleInputChange}
                         />
                     </div>
 
@@ -161,6 +176,7 @@ const CreatePoint = () => {
                                 type="email"
                                 name="email"
                                 id="email"
+                                onChange={handleInputChange}
                             />
                         </div>
 
@@ -170,6 +186,7 @@ const CreatePoint = () => {
                                 type="text"
                                 name="whatsapp"
                                 id="whatsapp"
+                                onChange={handleInputChange}
                             />
                         </div>
                     </div>
