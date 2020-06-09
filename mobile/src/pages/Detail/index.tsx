@@ -1,14 +1,56 @@
-import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, Text, SafeAreaView } from 'react-native';
-import { useNavigation } from '@react-navigation/native'
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, TouchableOpacity, Image, Text, SafeAreaView, Linking } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native'
 import { Feather as Icon, FontAwesome } from '@expo/vector-icons';
 import { RectButton } from 'react-native-gesture-handler';
 
+import api from '../../services/api';
+interface PointParams {
+  point_id: number;
+}
+
+interface Data {
+  point: {
+    name: string;
+    image: string;
+    city: string;
+    uf: string;
+    whatsapp: string;
+    mail: string;
+  },
+  items: {
+    title: string;
+  }[]
+}
+
 const Detail = () => {
     const navigation = useNavigation();
+    const route = useRoute();
+
+    const [data, setData] = useState<Data>({} as Data);
+
+    const { point_id } = route.params as PointParams;
 
     const handleNavigateBack = () => {
         navigation.goBack();
+    }
+
+    const loadPointDetail = async () => {
+      const pointResponse = await api.get(`/points/${point_id}`);
+
+      setData(pointResponse.data);
+    };
+
+    useEffect(() => {
+      loadPointDetail();
+    }, []);
+
+    if (!data.point) {
+      return null;
+    }
+
+    const handleWhatsappMessage = () => {
+      Linking.openURL(`whatsapp://send?phone=${data.point.whatsapp}&text=Tenho interesse na coleta de resíduos`);
     }
 
     return (
@@ -24,21 +66,20 @@ const Detail = () => {
 
             <Image 
                 style={styles.pointImage}
-                source={{ uri: 'https://images.unsplash.com/photo-1560891788-75137d27109c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=250&q=50' }} 
+                source={{ uri: data.point.image }} 
             />
 
-            <Text style={styles.pointName}>Mercadão do Jão</Text>
-            <Text style={styles.pointItems}>Lâmpadas, Óleo de cozinha</Text>
+            <Text style={styles.pointName}>{data.point.name}</Text>
+            <Text style={styles.pointItems}>{data.items.map(item => item.title).join(', ')}</Text>
 
             <View style={styles.address}>
               <Text style={styles.addressTitle}>Endereço</Text>
-              <Text style={styles.addressContent}>Rua dos Tolos, nº 0</Text>
-
+              <Text style={styles.addressContent}>{data.point.city}, {data.point.uf}</Text>
             </View>
         </View>
 
         <View style={styles.footer}>
-          <RectButton style={styles.button} onPress={() => {}}>
+          <RectButton style={styles.button} onPress={() => handleWhatsappMessage()}>
             <FontAwesome name="whatsapp" size={20} color="#FFF"/>
             <Text style={styles.buttonText}>Whatsapp</Text>
           </RectButton>
