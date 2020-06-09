@@ -28,3 +28,23 @@ services:
             - ./frontend:/usr/app
         command: npm run start
         stdin_open: true
+
+    mobile:
+        build: 
+            context: mobile/.
+            args:
+                - NODE_ENV=development
+        image: mobile_nlw
+        container_name: mobile_nlw
+        ports:
+            - 19000:19000
+            - 19001:19001
+            - 19002:19002
+        volumes: 
+            - ./mobile:/usr/app
+        command: npm run start
+        environment:
+            - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
+            - ADB_IP=192.168.1.1
+            - REACT_NATIVE_PACKAGER_HOSTNAME=192.168.0.105
+
