@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity, Image, Text, SafeAreaView, Linking 
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { Feather as Icon, FontAwesome } from '@expo/vector-icons';
 import { RectButton } from 'react-native-gesture-handler';
+import * as MailComposer  from 'expo-mail-composer';
 
 import api from '../../services/api';
 interface PointParams {
@@ -16,7 +17,7 @@ interface Data {
     city: string;
     uf: string;
     whatsapp: string;
-    mail: string;
+    email: string;
   },
   items: {
     title: string;
@@ -53,6 +54,13 @@ const Detail = () => {
       Linking.openURL(`whatsapp://send?phone=${data.point.whatsapp}&text=Tenho interesse na coleta de resíduos`);
     }
 
+    const handleMailMessage = () => {
+      MailComposer.composeAsync({
+        subject: 'Interesse em coleta de resíduos',
+        recipients: [data.point.email]
+      })
+    }
+
     return (
       <SafeAreaView style={{ flex: 1 }}>
         {/*
@@ -84,7 +92,7 @@ const Detail = () => {
             <Text style={styles.buttonText}>Whatsapp</Text>
           </RectButton>
 
-          <RectButton style={styles.button} onPress={() => {}}>
+          <RectButton style={styles.button} onPress={() => handleMailMessage()}>
             <Icon name="mail" size={20} color="#FFF"/>
             <Text style={styles.buttonText}>E-mail</Text>
           </RectButton>
