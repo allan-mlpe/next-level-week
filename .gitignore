@@ -1,3 +1,13 @@
+# back
 backend/node_modules
+backend/uploads/*
+!backend/uploads/*.svg
+
+# front
 frontend/node_modules
+
+# mobile
 mobile/node_modules
+
+# files
+*.sqlite
