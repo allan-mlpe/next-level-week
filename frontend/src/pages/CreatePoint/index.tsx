@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ChangeEvent, FormEvent } from 'react';
+import React, { useEffect, useState, ChangeEvent, FormEvent, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
@@ -10,6 +10,7 @@ import logo from '../../assets/logo.svg';
 
 import api from '../../services/api';
 import { getUFs, getCities } from '../../services/ibgeService';
+import Dropzone from '../../components/Dropzone';
 
 interface Item {
     id: number;
@@ -41,10 +42,11 @@ const CreatePoint = () => {
 
     // selected values
     const [selectedUf, setSelectedUf] = useState<string>('0');
-    const [selectedCity, setSelectedCity] = useState<string>();
+    const [selectedCity, setSelectedCity] = useState<string>('0');
     const [initialCoords, setInitialsCoords] = useState<[number, number]>([-8.055283,-34.878128]);
     const [selectedCoords, setSelectedCoords] = useState<[number, number]>([0,0]);
     const [selectedItems, setSelectedItems] = useState<number[]>([]);
+    const [selectedImage, setSelectedImage] = useState<File>();
 
 
     const loadItems = async () => {
@@ -67,18 +69,22 @@ const CreatePoint = () => {
         setUfs(mappedUfs);
     }
 
-    const loadCities = async () => {
-        const cities = await getCities(selectedUf);
+    const loadCities = useCallback(() => {
+        const func = async () => {
+            const cities = await getCities(selectedUf);
+    
+            const mappedCities = cities.data.map((city: any) => {
+                return {
+                    id: city.id,
+                    name: city.nome
+                }
+            });
+    
+            setCities(mappedCities);
+        };
 
-        const mappedCities = cities.data.map((city: any) => {
-            return {
-                id: city.id,
-                name: city.nome
-            }
-        });
-
-        setCities(mappedCities);
-    }
+        func();
+    }, [selectedUf]);
 
     // carrega localização atual do usuário
     useEffect(() => {
@@ -106,7 +112,7 @@ const CreatePoint = () => {
         } else {
             setCities([]);
         }
-    }, [selectedUf]);
+    }, [selectedUf, loadCities]);
 
 
     // Handlers
@@ -151,19 +157,22 @@ const CreatePoint = () => {
         const [latitude, longitude] = selectedCoords;
         const items = selectedItems;
 
-        const point = {
-            name,
-            email,
-            whatsapp,
-            uf,
-            city,
-            latitude,
-            longitude,
-            items
-        };
+        const data: FormData = new FormData();
 
+        data.append("name", name);
+        data.append("email", email);
+        data.append("whatsapp", whatsapp);
+        data.append("uf", uf);
+        data.append("city", city);
+        data.append("latitude", String(latitude));
+        data.append("longitude", String(longitude));
+        data.append("items", items.join(','));
+
+        if (selectedImage) {
+            data.append("image", selectedImage);
+        }
         
-        const response = await api.post('/points', point);
+        const response = await api.post('/points', data);
         const storedPoint = response.data;
 
         alert(`Ponto de coleta '${storedPoint.id}' cadastrado com sucesso!`);
@@ -184,6 +193,9 @@ const CreatePoint = () => {
 
             <form onSubmit={handleSubmit}>
                 <h1>Cadastro do <br/> ponto de coleta</h1>
+
+                <Dropzone 
+                    onSelectImage={setSelectedImage}/>
 
                 <fieldset>
                     <legend>
