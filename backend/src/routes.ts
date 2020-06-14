@@ -1,4 +1,6 @@
 import express from 'express';
+import { celebrate, Joi } from 'celebrate';
+
 
 // lib para configuração de upload
 import multer from 'multer';
@@ -42,6 +44,30 @@ contrário poderíamos utilizar `upload.array(...)`. O parâmetro dentro das
 funções `single` ou `array` deve ser o nome do campo da request que contém 
 a imagem. 
 */
-routes.post('/points', upload.single('image'), pointsController.create.bind(pointsController));
+routes.post(
+    '/points', 
+    upload.single('image'),
+    celebrate({
+        /*
+            Podemos validar várias coisas além do body:
+            headers, cookies, params, query params, etc.
+        */
+        body: Joi.object().keys({
+            name: Joi.string().required(),
+            email: Joi.string().required().email(),
+            whatsapp: Joi.string().required(),
+            city: Joi.string().required(),
+            uf: Joi.string().required().max(2),
+            latitude: Joi.number().required(),
+            longitude: Joi.number().required(),
+            items: Joi.string().required().regex(/([0-9](,{0,1}))+[0-9]+$/)
+        })
+    }, {
+        // faz a validação em TODOS os campos antes de retornar o erro;
+        // se for true, retornará erro tão logo o primeiro erro seja encontrado
+        abortEarly: false 
+    }),
+    pointsController.create.bind(pointsController)
+);
 
 export default routes;
