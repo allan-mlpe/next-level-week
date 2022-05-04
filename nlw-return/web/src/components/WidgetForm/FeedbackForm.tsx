@@ -6,11 +6,12 @@ import { CloseButton } from "../CloseButton";
 import { ScreenshotButton } from "./ScreenshotButton";
 
 interface FeedbackFormProps {
-  selectedFeedbackType: FeedbackType
-  onBackPressed: () => void
+  selectedFeedbackType: FeedbackType;
+  onBackPressed: () => void;
+  onFeedbackSent: () => void;
 }
 
-export function FeedbackForm({ selectedFeedbackType, onBackPressed }: FeedbackFormProps) {
+export function FeedbackForm({ selectedFeedbackType, onBackPressed, onFeedbackSent }: FeedbackFormProps) {
 
   const feedback = feedbackTypes[selectedFeedbackType];
   const [screenshot, setScreenshot] = useState<string | null>(null);
@@ -20,6 +21,8 @@ export function FeedbackForm({ selectedFeedbackType, onBackPressed }: FeedbackFo
     event.preventDefault();
 
     console.log(comment, screenshot);
+
+    onFeedbackSent();
   }
 
   return (
