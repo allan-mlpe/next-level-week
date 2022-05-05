@@ -17,6 +17,6 @@ routes.post('/feedbacks', async (req, res) => {
     nodemailerMailSender
   );
 
-  createFeedbackUseCase.execute({ type, comment, screenshot })
+  await createFeedbackUseCase.execute({ type, comment, screenshot })
   return res.status(201).send();
 });

@@ -13,10 +13,10 @@ export class CreateFeedbackUseCase {
     private mailSender: MailSender,
   ) {} 
 
-  execute({type, comment, screenshot}: CreateFeedbackRequest) {
-    this.feedbackRepository.create({ type, comment, screenshot});
+  async execute({type, comment, screenshot}: CreateFeedbackRequest) {
+    await this.feedbackRepository.create({ type, comment, screenshot});
 
-    this.mailSender.send({
+    await this.mailSender.send({
       to: `Saga <saga@santuario.com>`,
       body: [
         '<div>',
