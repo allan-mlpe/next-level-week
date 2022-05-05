@@ -13,7 +13,15 @@ export class CreateFeedbackUseCase {
     private mailSender: MailSender,
   ) {} 
 
-  async execute({type, comment, screenshot}: CreateFeedbackRequest) {
+  async execute({type, comment, screenshot}: CreateFeedbackRequest) {    
+    if (!type || !comment) {
+      throw new Error('Invalid payload');
+    }
+
+    if (screenshot && !screenshot.startsWith('data:image/png;base64')) {
+      throw new Error('Invalid screenshot format');
+    }
+    
     await this.feedbackRepository.create({ type, comment, screenshot});
 
     await this.mailSender.send({
