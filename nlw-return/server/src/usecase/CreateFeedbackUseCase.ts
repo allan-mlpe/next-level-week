@@ -30,6 +30,7 @@ export class CreateFeedbackUseCase {
         '<div>',
         `<p>Tipo: ${type}</p>`,
         `<p>Comentário: ${comment}</p>`,
+        `<p>Screenshot: ${screenshot ? `<img src="${screenshot}" />` : 'Nenhuma imagem fornecida pelo usuário.'}`,
         '</div>'
       ].join('\n')
     });
